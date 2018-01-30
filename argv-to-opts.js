@@ -1,21 +1,37 @@
+const ACTIONS = require('./utils').actions; 
+
 function processArgs(args) {
     return new Promise((resolve, reject) => {
-        const NB_ARGS = args.length;
-        const CORE_OPTS = {};
-        
-        switch (NB_ARGS) {
+        let options;
+        let action;
+
+        switch (args.length) {
             case 6:
-                CORE_OPTS['inputsFile'] = process.argv[5];
+                options = {
+                    'inputsFile': process.argv[5],
+                    'outputFile': process.argv[4],
+                    'dataFile': process.argv[2]
+                };
+                action = ACTIONS.PREDICT;
+                break;
             case 5:
-                CORE_OPTS['outputFile'] = process.argv[4];
+                options = {
+                    'outputFile': process.argv[4],
+                    'dataFile': process.argv[2]
+                };
+                action = ACTIONS.TRAIN;
+                break;
             case 3:
-                CORE_OPTS['dataFile'] = process.argv[2];
+                options = {
+                    'dataFile': process.argv[2]
+                };
+                action = ACTIONS.TRAIN;
                 break;
             default:
                 reject('Invalid args');
         }
 
-        resolve(CORE_OPTS);
+        resolve({ options, action });
     });
 }
 

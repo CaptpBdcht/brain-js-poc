@@ -19,17 +19,8 @@
 
 const core = require('./core');
 const argvToOpts = require('./argv-to-opts');
-const showResults = require('./utils').showResults;
 
 argvToOpts()
-.then(options => core(options))
-.then(result => showResults(result))
+.then(config => core(config))
+.then(console.info)
 .catch(console.error);
-
-// const rateToPercentage = (number) => {
-//     return (number * 100).toFixed(2);
-// };
-//
-// // Test
-// const netAccuracy = accuracy(net, DATA);
-// console.log('Accuracy:', rateToPercentage(netAccuracy), '%');
