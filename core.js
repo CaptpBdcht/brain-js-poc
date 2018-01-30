@@ -14,7 +14,7 @@ const NN_OPTS = {
     iterations: 2000,
 };
 
-function extractDataset(filename) {
+function datasetFromFilename(filename) {
     return new Promise((resolve, reject) => {
         const DATA_PATH = `${__dirname}/${filename}`;
         const DATA_STAT = fs.lstatSync(DATA_PATH);
@@ -30,25 +30,26 @@ function extractDataset(filename) {
 }
 
 function testNN(options) {
-    const extractSets = (dataset) => {
+
+    function extractSets(dataset) {
         const TRAIN_SET = dataset.slice(0, (dataset.length + 1) / 2);
         const TEST_SET = dataset.slice((dataset.length + 1) / 2);
         return { train: TRAIN_SET, test: TEST_SET };
     };
 
-    const trainNet = (sets) => {
+    function trainNet(sets) {
         const _NET = new brain.NeuralNetwork(NN_OPTS);
         _NET.train(sets.train);
         return { net: _NET, tests: sets.test };
     }
 
-    const findAccuracy = (obj) => {
+    function findAccuracy(obj) {
         const ACCURACY = accuracy(obj.net, obj.tests);
         console.log('Accuracy:', percent(ACCURACY), '%');
     }
 
     return new Promise((resolve, reject) => {
-        return extractDataset(options.dataFile)
+        return datasetFromFilename(options.dataFile)
         .then(extractSets)
         .then(trainNet)
         .then(findAccuracy)
