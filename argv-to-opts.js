@@ -19,13 +19,13 @@ function processArgs(args) {
                     'outputFile': process.argv[4],
                     'dataFile': process.argv[2]
                 };
-                action = ACTIONS.TEST;
+                action = ACTIONS.TRAIN;
                 break;
             case 3:
                 options = {
                     'dataFile': process.argv[2]
                 };
-                action = ACTIONS.TRAIN;
+                action = ACTIONS.TEST;
                 break;
             default:
                 reject('Invalid args');

@@ -29,7 +29,7 @@ function extractDataset(filename) {
     });
 }
 
-function trainNN(options) {
+function testNN(options) {
     const extractSets = (dataset) => {
         const TRAIN_SET = dataset.slice(0, (dataset.length + 1) / 2);
         const TEST_SET = dataset.slice((dataset.length + 1) / 2);
@@ -56,7 +56,7 @@ function trainNN(options) {
     });
 }
 
-function testNN(options) {
+function trainNN(options) {
     return new Promise((resolve, reject) => {
         reject('Not implemented yet');
     });
@@ -106,12 +106,12 @@ module.exports = (config) => {
 
     return new Promise((resolve, reject) => {
         switch (ACTION) {
-            case ACTIONS.TRAIN:
-                return trainNN(OPTIONS)
-                .then(result => resolve(result))
-                .catch(error => reject(error));
             case ACTIONS.TEST:
                 return testNN(OPTIONS)
+                .then(result => resolve(result))
+                .catch(error => reject(error));
+            case ACTIONS.TRAIN:
+                return trainNN(OPTIONS)
                 .then(result => resolve(result))
                 .catch(error => reject(error));
             case ACTIONS.PREDICT:
