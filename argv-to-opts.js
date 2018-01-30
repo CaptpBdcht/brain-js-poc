@@ -19,7 +19,7 @@ function processArgs(args) {
                     'outputFile': process.argv[4],
                     'dataFile': process.argv[2]
                 };
-                action = ACTIONS.TRAIN;
+                action = ACTIONS.TEST;
                 break;
             case 3:
                 options = {

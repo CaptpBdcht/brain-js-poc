@@ -7,60 +7,72 @@ const ACTIONS = utils.actions;
 const ROUND = utils.round;
 const percent = utils.percent;
 
-function testNN(options) {
-    return new Promise((resolve, reject) => {
-        const DATAPATH = `${__dirname}/${options.dataFile}`;
-        const DATASTAT = fs.lstatSync(DATAPATH);
-        
-        if (!DATASTAT.isFile())
-            reject(DATAPATH + ': Should be a file');
-        
-        const DATASTREAM = fs.readFileSync(DATAPATH);
-        const DATASET = JSON.parse(DATASTREAM);
-    
-        const NN_OPTS = {
-            activation: 'sigmoid',
-            errorThresh: 0.01,
-            hiddenLayers: [7],
-            iterations: 2000,
-        };
-    
-        const _NET = new brain.NeuralNetwork(NN_OPTS);
-        _NET.train(DATASET);
-        
-        const TEST = { r: 1, g: 0.4, b: 0 };
-        const GUESS = _NET.run(TEST);
-    
-        resolve({ test: TEST, guess: GUESS });
-    });
-}
+const NN_OPTS = {
+    activation: 'sigmoid',
+    errorThresh: 0.01,
+    hiddenLayers: [7],
+    iterations: 2000,
+};
 
 function trainNN(options) {
     return new Promise((resolve, reject) => {
-        const DATAPATH = `${__dirname}/${options.dataFile}`;
-        const DATASTAT = fs.lstatSync(DATAPATH);
+        const DATA_PATH = `${__dirname}/${options.dataFile}`;
+        const DATA_STAT = fs.lstatSync(DATA_PATH);
         
-        if (!DATASTAT.isFile())
-            reject(DATAPATH + ': Should be a file');
+        if (!DATA_STAT.isFile())
+            reject(DATA_PATH, '- Should be a file');
         
-        const DATASTREAM = fs.readFileSync(DATAPATH);
-        const DATASET = JSON.parse(DATASTREAM);
+        const DATA_STREAM = fs.readFileSync(DATA_PATH);
+        const DATA_SET = JSON.parse(DATA_STREAM);
     
-        const TRAINSET = DATASET.slice(0, (DATASET.length + 1) / 2);
-        const TESTSET = DATASET.slice((DATASET.length + 1) / 2);
-
-        const NN_OPTS = {
-            activation: 'sigmoid',
-            errorThresh: 0.01,
-            hiddenLayers: [7],
-            iterations: 2000,
-        };
+        const TRAIN_SET = DATA_SET.slice(0, (DATA_SET.length + 1) / 2);
+        const TEST_SET = DATA_SET.slice((DATA_SET.length + 1) / 2);
     
         const _NET = new brain.NeuralNetwork(NN_OPTS);
-        _NET.train(TRAINSET);
+        _NET.train(TRAIN_SET);
         
-        const netAccuracy = accuracy(_NET, TESTSET);
-        console.log('Accuracy:', percent(netAccuracy), '%');
+        const ACCURACY = accuracy(_NET, TEST_SET);
+        console.log('Accuracy:', percent(ACCURACY), '%');
+    
+        resolve('Success');
+    });
+}
+
+function testNN(options) {
+    return new Promise((resolve, reject) => {
+        reject('Not implemented yet');
+    });
+}
+
+function predictNN(options) {
+    return new Promise((resolve, reject) => {
+        const DATA_PATH = `${__dirname}/${options.dataFile}`;
+        const INPUTS_PATH = `${__dirname}/${options.inputsFile}`;
+        const DATA_STAT = fs.lstatSync(DATA_PATH);
+        const INPUTS_STAT = fs.lstatSync(INPUTS_PATH);
+        
+        if (!DATA_STAT.isFile())
+            reject(DATA_PATH + ': Should be a file');
+        else if (!INPUTS_STAT.isFile())
+            reject(INPUTS_PATH + ': Should be a file');
+        
+        const DATA_STREAM = fs.readFileSync(DATA_PATH);
+        const INPUTS_STREAM = fs.readFileSync(INPUTS_PATH);
+
+        const DATA_SET = JSON.parse(DATA_STREAM);
+        const INPUTS_SET = JSON.parse(INPUTS_STREAM);
+        console.log(DATA_SET);
+        console.log(INPUTS_SET);
+
+        const _NET = new brain.NeuralNetwork(NN_OPTS);
+        _NET.train(DATA_SET);
+        
+        const results = INPUTS_SET.reduce((acc, test) => {
+            let guess = _NET.run(test.input);
+            acc.push(guess);
+            return acc;
+        }, []);
+        console.log(results);
     
         resolve('Success');
     });
@@ -69,6 +81,9 @@ function trainNN(options) {
 module.exports = (config) => {
     const OPTIONS = config.options;
     const ACTION = config.action;
+
+    console.log(OPTIONS);
+    console.log(ACTION);
 
     return new Promise((resolve, reject) => {
         switch (ACTION) {
@@ -81,6 +96,9 @@ module.exports = (config) => {
                 .then(result => resolve(result))
                 .catch(error => reject(error));
             case ACTIONS.PREDICT:
+                return predictNN(OPTIONS)
+                .then(result => resolve(result))
+                .catch(error => reject(error));
             default:
                 reject('Unknown action');
         }
