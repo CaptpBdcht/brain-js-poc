@@ -34,7 +34,7 @@ function trainNN(options) {
         const ACCURACY = accuracy(_NET, TEST_SET);
         console.log('Accuracy:', percent(ACCURACY), '%');
     
-        resolve('Success');
+        resolve();
     });
 }
 
@@ -48,6 +48,7 @@ function predictNN(options) {
     return new Promise((resolve, reject) => {
         const DATA_PATH = `${__dirname}/${options.dataFile}`;
         const INPUTS_PATH = `${__dirname}/${options.inputsFile}`;
+
         const DATA_STAT = fs.lstatSync(DATA_PATH);
         const INPUTS_STAT = fs.lstatSync(INPUTS_PATH);
         
@@ -61,9 +62,7 @@ function predictNN(options) {
 
         const DATA_SET = JSON.parse(DATA_STREAM);
         const INPUTS_SET = JSON.parse(INPUTS_STREAM);
-        console.log(DATA_SET);
-        console.log(INPUTS_SET);
-
+        
         const _NET = new brain.NeuralNetwork(NN_OPTS);
         _NET.train(DATA_SET);
         
@@ -72,7 +71,9 @@ function predictNN(options) {
             acc.push(guess);
             return acc;
         }, []);
-        console.log(results);
+        
+        const OUTPUT_PATH = `${__dirname}/${options.outputFile}`;
+        const writing = fs.writeFileSync(OUTPUT_PATH, JSON.stringify(results));
     
         resolve('Success');
     });
