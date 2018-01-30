@@ -5,6 +5,7 @@ const accuracy = require('./accuracy');
 const utils = require('./utils');
 const ACTIONS = utils.actions;
 const ROUND = utils.round;
+const percent = utils.percent;
 
 function testNN(options) {
     return new Promise((resolve, reject) => {
@@ -47,10 +48,6 @@ function trainNN(options) {
     
         const TRAINSET = DATASET.slice(0, (DATASET.length + 1) / 2);
         const TESTSET = DATASET.slice((DATASET.length + 1) / 2);
-        // console.log(TRAINSET);
-        // console.log(TRAINSET.length);
-        // console.log(TESTSET);
-        // console.log(TESTSET.length);
 
         const NN_OPTS = {
             activation: 'sigmoid',
@@ -62,12 +59,8 @@ function trainNN(options) {
         const _NET = new brain.NeuralNetwork(NN_OPTS);
         _NET.train(TRAINSET);
         
-        const rateToPercentage = (number) => {
-            return (number * 100).toFixed(2);
-        };
-        
         const netAccuracy = accuracy(_NET, TESTSET);
-        console.log('Accuracy:', rateToPercentage(netAccuracy), '%');
+        console.log('Accuracy:', percent(netAccuracy), '%');
     
         resolve('Success');
     });

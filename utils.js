@@ -14,8 +14,15 @@ function showResults(result) {
     console.log('Guess:', result.guess);
 }
 
+function toPercent(value) {
+    return 0 <= value && value <= 1
+    ? (value * 100).toFixed(2)
+    : value;
+}
+
 module.exports = {
     "actions": ACTIONS,
     "round": roundHalf,
-    "showResults": showResults
+    "showResults": showResults,
+    "percent": toPercent
 };
