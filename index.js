@@ -1,12 +1,12 @@
 const core = require('./core');
+const argvToOpts = require('./argv-to-opts');
 const showResults = require('./utils').showResults;
 
-core('dataset.json')
+argvToOpts()
+.then(options => core(options))
 .then(result => showResults(result))
 .catch(console.error);
 
-// console.log(process.argv);
-//
 // const rateToPercentage = (number) => {
 //     return (number * 100).toFixed(2);
 // };

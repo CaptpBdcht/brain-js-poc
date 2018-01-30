@@ -1,9 +1,9 @@
 const brain = require('brain.js');
 const fs = require('fs');
 
-module.exports = (dataFilename) => {
+module.exports = (opts) => {
     return new Promise((resolve, reject) => {
-        const DATAPATH = `${__dirname}/${dataFilename}`;
+        const DATAPATH = `${__dirname}/${opts.dataFile}`;
         const DATASTAT = fs.lstatSync(DATAPATH);
         
         if (!DATASTAT.isFile())
@@ -11,7 +11,6 @@ module.exports = (dataFilename) => {
         
         const DATASTREAM = fs.readFileSync(DATAPATH);
         const DATASET = JSON.parse(DATASTREAM);
-        console.log(DATASET);
 
         const NN_OPTS = {
             activation: 'sigmoid',
