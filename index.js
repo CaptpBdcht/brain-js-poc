@@ -17,10 +17,10 @@
  * [ ... { input: Object || Array, output: Object || Array } ]
  */
 
-const core = require('./core');
+const runCore = require('./core');
 const argvToOpts = require('./argv-to-opts');
 
 argvToOpts()
-.then(config => core(config))
+.then(runCore)
 .then(console.info)
 .catch(console.error);

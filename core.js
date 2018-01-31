@@ -32,10 +32,10 @@ function datasetFromFilename(filename) {
 function testNN(options) {
 
     function extractSets(dataset) {
-        const TRAIN_SET = dataset.slice(0, (dataset.length + 1) / 2);
-        const TEST_SET = dataset.slice((dataset.length + 1) / 2);
+        const TRAIN_SET = dataset.slice(0, ROUND(dataset.length));
+        const TEST_SET = dataset.slice(ROUND(dataset.length));
         return { train: TRAIN_SET, test: TEST_SET };
-    };
+    }
 
     function trainNet(sets) {
         const _NET = new brain.NeuralNetwork(NN_OPTS);
@@ -85,14 +85,14 @@ function predictNN(options) {
         const _NET = new brain.NeuralNetwork(NN_OPTS);
         _NET.train(DATA_SET);
         
-        const results = INPUTS_SET.reduce((acc, test) => {
+        const GUESSES = INPUTS_SET.reduce((acc, test) => {
             let guess = _NET.run(test.input);
             acc.push(guess);
             return acc;
         }, []);
         
         const OUTPUT_PATH = `${__dirname}/${options.outputFile}`;
-        const writing = fs.writeFileSync(OUTPUT_PATH, JSON.stringify(results));
+        const writing = fs.writeFileSync(OUTPUT_PATH, JSON.stringify(GUESSES));
     
         resolve('Success');
     });
@@ -108,17 +108,11 @@ module.exports = (config) => {
     return new Promise((resolve, reject) => {
         switch (ACTION) {
             case ACTIONS.TEST:
-                return testNN(OPTIONS)
-                .then(result => resolve(result))
-                .catch(error => reject(error));
+                return testNN(OPTIONS).then(resolve).catch(reject);
             case ACTIONS.TRAIN:
-                return trainNN(OPTIONS)
-                .then(result => resolve(result))
-                .catch(error => reject(error));
+                return trainNN(OPTIONS).then(resolve).catch(reject);
             case ACTIONS.PREDICT:
-                return predictNN(OPTIONS)
-                .then(result => resolve(result))
-                .catch(error => reject(error));
+                return predictNN(OPTIONS).then(resolve).catch(reject);
             default:
                 reject('Unknown action');
         }
