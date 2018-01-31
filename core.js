@@ -34,13 +34,13 @@ function testNN(options) {
     function extractSets(dataset) {
         const TRAIN_SET = dataset.slice(0, ROUND(dataset.length));
         const TEST_SET = dataset.slice(ROUND(dataset.length));
-        return { train: TRAIN_SET, test: TEST_SET };
+        return { first: TRAIN_SET, second: TEST_SET };
     }
 
     function trainNet(sets) {
         const _NET = new brain.NeuralNetwork(NN_OPTS);
-        _NET.train(sets.train);
-        return { net: _NET, tests: sets.test };
+        _NET.train(sets.first);
+        return { net: _NET, tests: sets.second };
     }
 
     function findAccuracy(obj) {
